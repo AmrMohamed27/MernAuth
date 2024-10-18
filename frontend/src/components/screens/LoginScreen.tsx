@@ -25,8 +25,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useDispatch } from "react-redux";
 import { useLoginMutation } from "@/slices/usersApiSlice";
 import { setCredentials } from "@/slices/authSlice";
-import { getUserInfo } from "@/lib/utils";
-import { Loader2 } from "lucide-react";
+import { useUserInfo } from "@/lib/utils";
+import Loading from "../Loading";
 
 const LoginScreen = () => {
   // State variable to store the password visibility
@@ -44,7 +44,7 @@ const LoginScreen = () => {
 
   const [login, { isLoading }] = useLoginMutation();
 
-  const userInfo = getUserInfo();
+  const userInfo = useUserInfo();
 
   useEffect(() => {
     if (userInfo) {
@@ -70,7 +70,7 @@ const LoginScreen = () => {
       dispatch(setCredentials({ ...res }));
       toast({
         title: "User Logged In Successfully",
-        description: "Welcome back!",
+        description: `Welcome back, ${res.name}!`,
       });
       navigate("/");
     } catch (error: any) {
@@ -124,11 +124,7 @@ const LoginScreen = () => {
             )}
           />
           {/* Loader */}
-          {isLoading && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <Loader2 className="w-24 h-24 text-white animate-spin" />
-            </div>
-          )}
+          <Loading isLoading={isLoading} />
           {/* Buttons */}
           <Button type="submit" className="bg-blue-500 hover:bg-blue-600">
             Sign In

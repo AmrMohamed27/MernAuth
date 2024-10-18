@@ -7,12 +7,12 @@ import {
 } from "@/components/ui/card";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
-import { getUserInfo } from "@/lib/utils";
+import { useUserInfo } from "@/lib/utils";
 import LogoutDialog from "./LogoutDialog";
 import { useState } from "react";
 
 const Hero = () => {
-  const userInfo = getUserInfo();
+  const userInfo = useUserInfo();
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
   const openDialog = () => {
@@ -28,11 +28,11 @@ const Hero = () => {
       <CardHeader className="items-center gap-4">
         <CardTitle>MERN Authentication</CardTitle>
         <CardDescription className="text-center flex flex-col gap-4">
-          <p>
+          <span>
             This is a boilerplate for MERN authentication that stores a JWT in
             an HTTP-Only cookie. It also uses Redux Toolkit, TailwindCSS, ShadCN
             UI Component Library and TypeScript.
-          </p>
+          </span>
           {userInfo && (
             <span className="font-bold">Welcome back, {userInfo.name}!</span>
           )}

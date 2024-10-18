@@ -13,6 +13,8 @@ import { useLogoutMutation } from "@/slices/usersApiSlice";
 import { clearCredentials } from "../slices/authSlice";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { useToast } from "@/hooks/use-toast";
+import Loading from "./Loading";
 
 const LogoutDialog = ({
   isDialogOpen,
@@ -20,15 +22,21 @@ const LogoutDialog = ({
   setIsDialogOpen,
 }: LogoutDialogProps) => {
   // logout api and redux declarations
-  const [logoutApiCall] = useLogoutMutation();
+  const [logoutApiCall, { isLoading }] = useLogoutMutation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  // toast function
+  const { toast } = useToast();
   // Function to handle logout
   const logoutHandler = async () => {
     try {
       await logoutApiCall({}).unwrap();
       dispatch(clearCredentials({}));
       navigate("/");
+      toast({
+        title: "User Logged Out Successfully",
+        description: "You have been logged out.",
+      });
     } catch (error) {
       console.error(error);
     }
@@ -61,6 +69,8 @@ const LogoutDialog = ({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {/* Loader */}
+      <Loading isLoading={isLoading} />
     </>
   );
 };

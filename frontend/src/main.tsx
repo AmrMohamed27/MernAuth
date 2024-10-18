@@ -14,13 +14,24 @@ import RegisterScreen from "./components/screens/RegisterScreen";
 import store from "./store";
 import { Provider } from "react-redux";
 import { Toaster } from "./components/ui/toaster";
+import ProfileScreen from "./components/screens/ProfileScreen";
+import PrivateRoute from "./components/PrivateRoute";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
+    // Layout
     <Route path="/" element={<App />}>
+      {/* Home Page */}
       <Route index={true} path="/" element={<HomeScreen />}></Route>
+      {/* Login Page */}
       <Route path="/login" element={<LoginScreen />}></Route>
+      {/* Register Page */}
       <Route path="register" element={<RegisterScreen />}></Route>
+      {/* Protected Routes */}
+      <Route path="" element={<PrivateRoute />}>
+        {/* Profile Page */}
+        <Route path="/profile" element={<ProfileScreen />}></Route>
+      </Route>
     </Route>,
   ),
 );

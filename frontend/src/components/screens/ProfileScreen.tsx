@@ -1,7 +1,7 @@
 // Zod Imports
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import registerSchema from "@/schema/registerSchema";
+import updateSchema from "@/schema/updateSchema";
 // Shadcn Form Imports
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -17,50 +17,45 @@ import { Input } from "@/components/ui/input";
 // Components
 import FormContainer from "../FormContainer";
 import PasswordEye from "../PasswordEye";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 // React Hooks and Functions
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 // Redux
 import { useDispatch } from "react-redux";
-import { useRegisterMutation } from "@/slices/usersApiSlice";
+import { useUpdateMutation } from "@/slices/usersApiSlice";
 import { setCredentials } from "@/slices/authSlice";
 import { useUserInfo } from "@/lib/utils";
-import Loading from "../Loading";
+import { Loader2 } from "lucide-react";
 
-const RegisterScreen = () => {
+const ProfileScreen = () => {
   // Toast function
   const { toast } = useToast();
   // Redux functions
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [register, { isLoading }] = useRegisterMutation();
+  const [update, { isLoading }] = useUpdateMutation();
   // Get user info from state
   const userInfo = useUserInfo();
-  // Redirect to homepage if already logged in
-  useEffect(() => {
-    if (userInfo) {
-      navigate("/");
-    }
-  }, [navigate, userInfo]);
-
   // Define your form.
-  const form = useForm<z.infer<typeof registerSchema>>({
-    resolver: zodResolver(registerSchema),
+  const form = useForm<z.infer<typeof updateSchema>>({
+    resolver: zodResolver(updateSchema),
     defaultValues: {
-      name: "",
-      email: "",
+      name: userInfo.name,
+      email: userInfo.email,
       password: "",
       confirmPassword: "",
     },
   });
   // Watch the password and confirmPassword field values
+  const nameValue = form.watch("name", userInfo.name);
+  const emailValue = form.watch("email", userInfo.email);
   const passwordValue = form.watch("password", "");
   const confirmPasswordValue = form.watch("confirmPassword", "");
   // Define a submit handler.
-  async function onSubmit(values: z.infer<typeof registerSchema>) {
+  async function onSubmit(values: z.infer<typeof updateSchema>) {
     try {
-      if (passwordValue !== confirmPasswordValue) {
+      if (passwordValue !== "" && passwordValue !== confirmPasswordValue) {
         toast({
           title: "Passwords do not match",
           description: "Please make sure your passwords match.",
@@ -68,15 +63,21 @@ const RegisterScreen = () => {
         });
         return;
       }
-      const res = await register({
-        name: values.name,
-        email: values.email,
-        password: values.password,
-      }).unwrap();
+      const res =
+        passwordValue === ""
+          ? await update({
+              name: values.name,
+              email: values.email,
+            }).unwrap()
+          : await update({
+              name: values.name,
+              email: values.email,
+              password: values.password,
+            }).unwrap();
       dispatch(setCredentials({ ...res }));
       toast({
-        title: "User Registered Successfully",
-        description: `Welcome, ${res.name}!`,
+        title: "User Info Updated Successfully",
+        description: `Welcome ${res.name}!`,
       });
       navigate("/");
     } catch (error: any) {
@@ -101,7 +102,7 @@ const RegisterScreen = () => {
   };
 
   return (
-    <FormContainer header="Create an Account">
+    <FormContainer header={`${userInfo.name}'s Profile`}>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
@@ -135,7 +136,7 @@ const RegisterScreen = () => {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <FormLabel>New Password</FormLabel>
                 <FormControl>
                   <div className="relative">
                     <Input
@@ -158,7 +159,7 @@ const RegisterScreen = () => {
             name="confirmPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Confirm Password</FormLabel>
+                <FormLabel>Confirm New Password</FormLabel>
                 <FormControl>
                   <div className="relative">
                     <Input
@@ -177,30 +178,25 @@ const RegisterScreen = () => {
             )}
           />
           {/* Loader */}
-          <Loading isLoading={isLoading} />
+          {isLoading && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <Loader2 className="w-24 h-24 text-white animate-spin" />
+            </div>
+          )}
           {/* Buttons */}
           <Button
             type="submit"
             className="bg-blue-500 hover:bg-blue-600"
             disabled={
-              confirmPasswordValue === "" ||
-              confirmPasswordValue !== passwordValue
+              nameValue === userInfo.name && emailValue === userInfo.email && passwordValue === ""
             }
           >
-            Register
+            Save
           </Button>
-          <div>
-            <span>
-              Already have an account?
-              <Link to="/login" className="text-blue-500 hover:underline">
-                Sign In!
-              </Link>
-            </span>
-          </div>
         </form>
       </Form>
     </FormContainer>
   );
 };
 
-export default RegisterScreen;
+export default ProfileScreen;

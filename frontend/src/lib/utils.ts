@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function getUserInfo() {
+export function useUserInfo() {
   const { userInfo } = useSelector((state: any) => state.auth);
   return userInfo;
 }

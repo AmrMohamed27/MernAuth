@@ -3,10 +3,10 @@ import { Button } from "./ui/button";
 import { IoMdLogIn as LogInIcon } from "react-icons/io";
 import { FaUserPlus as SignUpIcon } from "react-icons/fa";
 import ProfileDropdown from "./ProfileDropdown";
-import { getUserInfo } from "@/lib/utils";
+import { useUserInfo } from "@/lib/utils";
 
 const AuthButtons = () => {
-  const userInfo = getUserInfo();
+  const userInfo = useUserInfo();
   return (
     <>
       {userInfo ? (
