@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -69,8 +68,6 @@ const RegisterScreen = () => {
     setShowConfirmPassword(prev => !prev);
   };
   // Watch the password and confirmPassword field values
-  const usernameValue = form.watch("name", "");
-  const emailValue = form.watch("email", "");
   const passwordValue = form.watch("password", "");
   const confirmPasswordValue = form.watch("confirmPassword", "");
 
@@ -87,11 +84,6 @@ const RegisterScreen = () => {
                 <FormControl>
                   <Input placeholder="John Doe" {...field} />
                 </FormControl>
-                {usernameValue.length < 3 && (
-                  <FormDescription className="text-red-500">
-                    Name must be at least 2 characters long
-                  </FormDescription>
-                )}
                 <FormMessage />
               </FormItem>
             )}
@@ -128,11 +120,6 @@ const RegisterScreen = () => {
                     />
                   </div>
                 </FormControl>
-                {passwordValue.length < 6 && (
-                  <FormDescription className="text-red-500">
-                    Password must be at least 6 characters
-                  </FormDescription>
-                )}
                 <FormMessage />
               </FormItem>
             )}
@@ -156,12 +143,6 @@ const RegisterScreen = () => {
                     />
                   </div>
                 </FormControl>
-                {(confirmPasswordValue === "" ||
-                  confirmPasswordValue !== passwordValue) && (
-                  <FormDescription className="text-red-500">
-                    Passwords do not match
-                  </FormDescription>
-                )}
                 <FormMessage />
               </FormItem>
             )}

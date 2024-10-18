@@ -1,6 +1,6 @@
 // Zod Imports
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import type { z } from "zod";
 import loginSchema from "@/schema/loginSchema";
 // Shadcn Form Imports
 import { useForm } from "react-hook-form";
@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -27,6 +26,7 @@ import { useDispatch } from "react-redux";
 import { useLoginMutation } from "@/slices/usersApiSlice";
 import { setCredentials } from "@/slices/authSlice";
 import { getUserInfo } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
 
 const LoginScreen = () => {
   // State variable to store the password visibility
@@ -60,8 +60,6 @@ const LoginScreen = () => {
       password: "",
     },
   });
-  // Watch the password field value
-  const passwordValue = form.watch("password", "");
   // Define a submit handler.
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     try {
@@ -121,17 +119,17 @@ const LoginScreen = () => {
                     />
                   </div>
                 </FormControl>
-                {passwordValue.length < 6 && (
-                  <FormDescription className="text-red-500">
-                    Password must be at least 6 characters
-                  </FormDescription>
-                )}
                 <FormMessage />
               </FormItem>
             )}
           />
+          {isLoading && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <Loader2 className="w-12 h-12 text-white animate-spin" />
+            </div>
+          )}
           <Button type="submit" className="bg-blue-500 hover:bg-blue-600">
-            Submit
+            Sign In
           </Button>
           <div>
             <span>

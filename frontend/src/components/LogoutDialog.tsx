@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-restricted-imports */
 import {
   Dialog,
   DialogContent,
@@ -7,13 +8,31 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "./ui/button";
-import { LogoutDialogProps } from "@/types";
+import type { LogoutDialogProps } from "@/types";
+import { useLogoutMutation } from "@/slices/usersApiSlice";
+import { clearCredentials } from "../slices/authSlice";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 const LogoutDialog = ({
   isDialogOpen,
   closeDialog,
   setIsDialogOpen,
 }: LogoutDialogProps) => {
+  // logout api and redux declarations
+  const [logoutApiCall] = useLogoutMutation();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  // Function to handle logout
+  const logoutHandler = async () => {
+    try {
+      await logoutApiCall({}).unwrap();
+      dispatch(clearCredentials({}));
+      navigate("/");
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <>
       {/* Dialog Component */}
@@ -33,7 +52,10 @@ const LogoutDialog = ({
             >
               Cancel
             </Button>
-            <Button className="bg-blue-500 hover:bg-blue-600 text-white">
+            <Button
+              className="bg-blue-500 hover:bg-blue-600 text-white"
+              onClick={logoutHandler}
+            >
               Logout
             </Button>
           </DialogFooter>
