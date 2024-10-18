@@ -4,6 +4,7 @@ import { notFound, errorHandler } from "./middleware/errorMiddlware";
 import dotenv from "dotenv";
 import connectDB from "./config/db";
 import cookieParser from "cookie-parser";
+import path from "path";
 
 dotenv.config();
 
@@ -17,11 +18,18 @@ app.use(cookieParser());
 // Routes
 app.use("/api/users", userRoutes);
 
-// Test Route
-app.get("/", (req: Request, res: Response) => {
-  res.send("Hello, Express with TypeScript!");
-});
-
+// Handle Production static rendering
+if (process.env.NODE_ENV === "production") {
+  const __dirname = path.resolve();
+  app.use(express.static(path.join(__dirname, "frontend/dist")));
+  app.get("*", (req: Request, res: Response) =>
+    res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"))
+  );
+} else {
+  app.get("/", (req: Request, res: Response) => {
+    res.send("Server is running!");
+  });
+}
 // Connect to MongoDB
 connectDB();
 // Start Server
