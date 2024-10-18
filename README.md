@@ -22,8 +22,7 @@ A full-stack authentication and authorization application built with the MERN st
 
 Ensure you have the following installed on your machine:
 
-- **Node.js** (v14 or above)
-- **MongoDB** (either locally or via MongoDB Atlas)
+- **Node.js** (v20 or above)
 
 ### Installation
 
@@ -113,3 +112,7 @@ MernAuth/
 ├── package.json        # Packages
 └── server.ts           # Express server entry point
 ```
+
+### License
+
+This project is licensed under the MIT License.
