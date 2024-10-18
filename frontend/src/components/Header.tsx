@@ -34,7 +34,7 @@ const Header = () => {
             />
           )}
           <div
-            className={`absolute top-0 left-0 transition-transform duration-500 transform h-full flex flex-col gap-16 p-4 bg-gray-900 text-white ${
+            className={`absolute top-0 left-0 transition-transform duration-500 transform min-h-screen flex flex-col gap-16 p-4 bg-gray-900 text-white ${
               isOpen ? "translate-x-0" : "-translate-x-full"
             }`}
           >

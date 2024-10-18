@@ -3,7 +3,6 @@ import { Button } from "./ui/button";
 import { IoMdLogIn as LogInIcon } from "react-icons/io";
 import { FaUserPlus as SignUpIcon } from "react-icons/fa";
 import ProfileDropdown from "./ProfileDropdown";
-import { UseDispatch } from "react-redux";
 import { getUserInfo } from "@/lib/utils";
 
 const AuthButtons = () => {

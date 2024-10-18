@@ -17,12 +17,34 @@ import { Input } from "@/components/ui/input";
 // Components
 import FormContainer from "../FormContainer";
 import PasswordEye from "../PasswordEye";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 // React Hooks and Functions
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+// Redux
+import { useDispatch } from "react-redux";
+import { useRegisterMutation } from "@/slices/usersApiSlice";
+import { setCredentials } from "@/slices/authSlice";
+import { getUserInfo } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
 
 const RegisterScreen = () => {
-  // 1. Define your form.
+  // Toast function
+  const { toast } = useToast();
+  // Redux functions
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [register, { isLoading }] = useRegisterMutation();
+  // Get user info from state
+  const userInfo = getUserInfo();
+  // Redirect to homepage if already logged in
+  useEffect(() => {
+    if (userInfo) {
+      navigate("/");
+    }
+  }, [navigate, userInfo]);
+
+  // Define your form.
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -32,27 +54,37 @@ const RegisterScreen = () => {
       confirmPassword: "",
     },
   });
-  // 2. Define a submit handler.
+  // Watch the password and confirmPassword field values
+  const passwordValue = form.watch("password", "");
+  const confirmPasswordValue = form.watch("confirmPassword", "");
+  // Define a submit handler.
   async function onSubmit(values: z.infer<typeof registerSchema>) {
     try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values), // Convert form values to JSON
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to sign up");
+      if (passwordValue !== confirmPasswordValue) {
+        toast({
+          title: "Passwords do not match",
+          description: "Please make sure your passwords match.",
+          variant: "destructive",
+        });
+        return;
       }
-
-      const data = await response.json();
-      console.log("Register successful:", data);
-      // You can also redirect the user or store tokens here, if needed
-    } catch (error) {
-      console.error("Error creating an account:", error);
-      // Optionally, show error message to the user here
+      const res = await register({
+        name: values.name,
+        email: values.email,
+        password: values.password,
+      }).unwrap();
+      dispatch(setCredentials({ ...res }));
+      toast({
+        title: "User Registered Successfully",
+        description: "Welcome to the app!",
+      });
+      navigate("/");
+    } catch (error: any) {
+      toast({
+        title: "Error creating account",
+        description: error.data?.message,
+        variant: "destructive",
+      });
     }
   }
   //   State variable to store the password visibility
@@ -67,9 +99,6 @@ const RegisterScreen = () => {
   const toggleShowConfirmPassword = () => {
     setShowConfirmPassword(prev => !prev);
   };
-  // Watch the password and confirmPassword field values
-  const passwordValue = form.watch("password", "");
-  const confirmPasswordValue = form.watch("confirmPassword", "");
 
   return (
     <FormContainer header="Create an Account">
@@ -147,6 +176,13 @@ const RegisterScreen = () => {
               </FormItem>
             )}
           />
+          {/* Loader */}
+          {isLoading && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <Loader2 className="w-24 h-24 text-white animate-spin" />
+            </div>
+          )}
+          {/* Buttons */}
           <Button
             type="submit"
             className="bg-blue-500 hover:bg-blue-600"

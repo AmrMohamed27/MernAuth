@@ -123,11 +123,13 @@ const LoginScreen = () => {
               </FormItem>
             )}
           />
+          {/* Loader */}
           {isLoading && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <Loader2 className="w-12 h-12 text-white animate-spin" />
+              <Loader2 className="w-24 h-24 text-white animate-spin" />
             </div>
           )}
+          {/* Buttons */}
           <Button type="submit" className="bg-blue-500 hover:bg-blue-600">
             Sign In
           </Button>
